@@ -8,7 +8,7 @@ import javax.persistence.*
 data class Customer(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    val id: Long?,
+    val id: Long? = null,
     val firstName: String?,
     val lastName: String?,
     @Column(nullable = false, unique = true)
@@ -16,8 +16,7 @@ data class Customer(
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?,
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
-    val orders: Set<Order>?,
-    @OneToOne(cascade = [CascadeType.ALL])
-    @JoinColumn(name = "address_id")
-    val address: Address?
+    val orders: List<Order>? = listOf(),
+    @OneToMany(mappedBy = "customer", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val address: List<Address>? = listOf()
 )

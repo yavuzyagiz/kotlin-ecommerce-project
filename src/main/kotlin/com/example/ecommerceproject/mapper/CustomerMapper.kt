@@ -6,15 +6,11 @@ import org.springframework.stereotype.Component
 
 @Component
 class CustomerMapper : Mapper<CustomerResponseDto, Customer> {
+
     override fun fromEntity(entity: Customer): CustomerResponseDto = CustomerResponseDto(
         entity.id,
         entity.firstName,
         entity.lastName,
-        entity.email,
-        entity.address
+        entity.email
     )
-
-    override fun toEntity(domain: CustomerResponseDto): Customer {
-        TODO("Not yet implemented")
-    }
 }

@@ -7,7 +7,7 @@ import javax.persistence.*
 data class OrderDetail(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    val id: Long?,
+    val id: Long? = null,
     @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     val order: Order?,
