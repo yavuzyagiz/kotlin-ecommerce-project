@@ -2,6 +2,7 @@ package com.example.ecommerceproject.service
 
 import com.example.ecommerceproject.dto.CustomerRequestDto
 import com.example.ecommerceproject.dto.CustomerResponseDto
+import com.example.ecommerceproject.exception.CustomerNotFoundException
 import com.example.ecommerceproject.mapper.CustomerMapper
 import com.example.ecommerceproject.model.Customer
 import com.example.ecommerceproject.repository.CustomerRepository
@@ -14,10 +15,9 @@ import java.time.LocalDateTime
 
 @Service
 class CustomerService(
-    private val customerRepository: CustomerRepository,
-    private val customerMapper: CustomerMapper
+    val customerRepository: CustomerRepository,
+    val customerMapper: CustomerMapper
 ) {
-
     fun deleteCustomerById(customerId: Long) {
         customerRepository.deleteById(customerId)
     }
@@ -40,13 +40,14 @@ class CustomerService(
         return customerMapper.fromEntity(
             customerRepository.findById(customerId)
                 .orElseThrow {
-                    IllegalArgumentException("Customer(id=$customerId) could not be found!")
+                    CustomerNotFoundException("Customer(id=$customerId) could not be found!")
                 })
     }
 
     fun findCustomerById(customerId: Long): Customer {
-        return customerRepository.findById(customerId).orElseThrow {
-            IllegalArgumentException("Customer(id=$customerId) could not be found!")
-        }
+        return customerRepository.findById(customerId)
+            .orElseThrow {
+                CustomerNotFoundException("Customer(id=$customerId) could not be found!")
+            }
     }
 }

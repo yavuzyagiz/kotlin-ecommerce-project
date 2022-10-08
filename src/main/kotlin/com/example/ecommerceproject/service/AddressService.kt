@@ -3,8 +3,8 @@ package com.example.ecommerceproject.service
 import com.example.ecommerceproject.dto.AddressRequestDto
 import com.example.ecommerceproject.dto.AddressResponseDto
 import com.example.ecommerceproject.dto.CustomerResponseDto
+import com.example.ecommerceproject.exception.AddressNotFoundException
 import com.example.ecommerceproject.mapper.AddressMapper
-import com.example.ecommerceproject.mapper.CustomerMapper
 import com.example.ecommerceproject.model.Address
 import com.example.ecommerceproject.model.Customer
 import com.example.ecommerceproject.repository.AddressRepository
@@ -13,16 +13,14 @@ import org.springframework.stereotype.Service
 @Service
 class AddressService(
     val addressRepository: AddressRepository,
-    val customerService: CustomerService,
     val addressMapper: AddressMapper,
-    val customerMapper: CustomerMapper
+    val customerService: CustomerService
 ) {
-
     fun addAddress(addressRequestDto: AddressRequestDto): AddressResponseDto {
         val customer: Customer =
             customerService.findCustomerById(
                 addressRequestDto.customerId
-                    ?: throw IllegalArgumentException("Address(id=${addressRequestDto.customerId}) could not be found!")
+                    ?: throw AddressNotFoundException("Address(id=${addressRequestDto.customerId}) could not be found!")
             )
 
         return addressMapper.fromEntity(
@@ -33,20 +31,20 @@ class AddressService(
                     postalCode = addressRequestDto.postalCode,
                     detail = addressRequestDto.detail,
                     customer = customer
-                    )
+                )
             )
         )
     }
 
-    fun getCustomerByAddressId(addressId: Long): CustomerResponseDto?{
-        return findAddressById(addressId).customer?.let { customerMapper.fromEntity(it) }
+    fun getCustomerByAddressId(addressId: Long): CustomerResponseDto? {
+        return findAddressById(addressId).customer?.let { customerService.customerMapper.fromEntity(it) }
     }
 
     fun getAddressById(addressId: Long): AddressResponseDto {
         return addressMapper.fromEntity(
             addressRepository.findById(addressId)
                 .orElseThrow {
-                    IllegalArgumentException("Address(id=$addressId) could not be found!")
+                    AddressNotFoundException("Address(id=$addressId) could not be found!")
                 })
     }
 
@@ -59,8 +57,7 @@ class AddressService(
 
     fun findAddressById(addressId: Long): Address {
         return addressRepository.findById(addressId).orElseThrow {
-            IllegalArgumentException("Address(id=$addressId) could not be found!")
+            AddressNotFoundException("Address(id=$addressId) could not be found!")
         }
     }
-
 }
